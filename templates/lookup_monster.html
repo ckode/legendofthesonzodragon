@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Explorer: Monster Lookup</title>
+    <link rel="stylesheet" type="text/css" href="../../../static/styles.css">
+</head>
+<body>
+   <h1 id="monster_h1">Monster Lookup: {{ monster.name }}</h1>
+
+     {% if monster %}
+         <h3>Monster Information:</h3>
+         <ul>
+             <li>Name: {{ monster.name }}</li>
+             <li>Level: {{ monster.level }}</li>
+             <li>Health: {{ monster.health }}</li>
+             <li>Experience: {{ monster.exp }}</li>
+             <li>Weapon: {{ monster.weapon }}</li>
+             <li>Armor: {{ monster.armor }}</li>
+             <li>Description: {{ monster.description }}</li>
+
+         </ul>
+     {% endif %}
+   <br>
+   <form method="POST" action="/explorer/monster/{{ monster.name }}/edit">
+       <input type="submit" value="Edit Monster">
+   </form>
+</body>
+</html>

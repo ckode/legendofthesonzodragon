@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Explorer: Player Lookup</title>
+    <link rel="stylesheet" type="text/css" href="../../../static/styles.css">
+</head>
+<body>
+   <h1 id="player_h1">Player Lookup: {{ player.username }}</h1>
+
+     {% if player %}
+         <h3>Player Information:</h3>
+         <ul>
+             <li>Username: {{ player.username }}</li>
+             <li>Password: {{ player.password }}</li>
+             <li>Player Name: {{ player.name }}</li>
+             <li>Level: {{ player.level }}</li>
+             <li>Health: {{ player.health }}</li>
+             <li>Experience: {{ player.exp }}</li>
+             <li>Armor: {{ player.armor }}</li>
+             <li>Weapon: {{ player.weapon }}</li>
+             <li>Gold: {{ player.gold }}</li>
+             <li>Bank: {{ player.bank }}</li>
+             <li>Description: {{ player.description }}</li>
+         </ul>
+     {% endif %}
+   <form method="POST" action="/explorer/player/{{ player.name }}/edit">
+       <input type="submit" value="Edit Player">
+   </form>
+</body>
+</html>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Weapon: {{ weapon.name }}</title>
+    <link rel="stylesheet" type="text/css" href="../../../static/styles.css">
+</head>
+<body>
+    <h1>Edit Weapon: {{ weapon.name }}</h1>
+
+    <form action="/explorer/weapon/{{ weapon.name }}" method="POST">
+        <table>
+            <tr>
+                <td><label><b>Type</b></label></td>
+                <td><label><b>Value</b></td>
+            </tr>
+            <tr>
+                <td><label>Name:</label></td>
+                <td><label>{{ weapon.id }}</label></td>
+            </tr>
+            <tr>
+                <td><label for="name">Name:</label></td>
+                <td><input type="text" id="name" name="name" value="{{ weapon.name }}"></td>
+            </tr>
+            <tr>
+                <td><label for="weight">Weight:</label></td>
+                <td><input type="number" id="weight" name="weight" value="{{ weapon.weight }}"></td>
+            </tr>
+            <tr>
+                <td><label for="min_damage">Min_Damage:</label></td>
+                <td><input type="number" id="min_damage" name="min_damage" value="{{ weapon.min_damage }}"></td>
+            </tr>
+            <tr>
+            <tr>
+                <td><label for="max_damage">Max_Damage:</label></td>
+                <td><input type="number" id="max_damage" name="max_damage" value="{{ weapon.max_damage }}"></td>
+            </tr>
+            <tr>
+                <td><label for="buy_value">Buy_Value:</label></td>
+                <td><input type="number" id="buy_value" name="buy_value" value="{{ weapon.buy_value }}"></td>
+            </tr>
+            <tr>
+            <tr>
+                <td><label for="sell_value">Sell_Value:</label></td>
+                <td><input type="number" id="sell_value" name="sell_value" value="{{ weapon.sell_value }}"></td>
+            </tr>
+            <tr>
+                <td><label for="monster_only">Monster_Only:</label></td>
+                <td><input type="checkbox" id="monster_only" name="monster_only" value="True" {% if weapon.monster_only %}checked{% endif %}></td>
+            </tr>
+            <tr>
+                <td><label for="desc_textarea">Description:</label></td>
+                <td><textarea id="desc_textarea" name="description">{{ weapon.description }}</textarea></td>
+            </tr>
+            <tr>
+               <td rowspan="2"><button type="submit">Update Weapon</button></td>
+            </tr>
+        </table>
+
+    </form>
+</body>
+</html>

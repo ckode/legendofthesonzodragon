@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Player: {{ player.name }}</title>
+    <link rel="stylesheet" type="text/css" href="../../../static/styles.css">
+</head>
+<body>
+    <h1>Edit Player: {{ player.name }}</h1>
+
+    <form action="/explorer/player/by_name/{{ player.name }}" method="POST">
+        <table>
+            <tr>
+                <td><label><b>Type</b></label></td>
+                <td><label><b>Value</b></td>
+            </tr>
+            <tr>
+                <td><label for="username">Name:</label></td>
+                <td><input type="text" id="username" name="username" value="{{ player.username }}"></td>
+            </tr>
+            <tr>
+                <td><label for="password">Name:</label></td>
+                <td><input type="text" id="password" name="password" value="{{ player.password }}"></td>
+            </tr>
+            <tr>
+                <td><label for="name">Name:</label></td>
+                <td><input type="text" id="name" name="name" value="{{ player.name }}"></td>
+            </tr>
+            <tr>
+                <td><label for="level">Level:</label></td>
+                <td><input type="number" id="level" name="level" value="{{ player.level }}"></td>
+            </tr>
+            <tr>
+                <td><label for="health">Health:</label></td>
+                <td><input type="number" id="health" name="health" value="{{ player.health }}"></td>
+            </tr>
+            <tr>
+                <td><label for="exp">Experience:</label></td>
+                <td><input type="number" id="exp" name="exp" value="{{ player.exp }}"></td>
+            </tr>
+            <tr>
+                <td><label for="weapon">Weapon:</label></td>
+                <td><input type="number" id="weapon" name="weapon" value="{{ player.weapon }}"></td>
+            </tr>
+            <tr>
+                <td><label for="armor">Armor:</label></td>
+                <td><input type="number" id="armor" name="armor" value="{{ player.armor }}"></td>
+            </tr>
+            <tr>
+                <td><label for="gold">Gold:</label></td>
+                <td><input type="number" id="gold" name="gold" value="{{ player.gold }}"></td>
+            </tr>
+            <tr>
+                <td><label for="bank">Bank:</label></td>
+                <td><input type="number" id="bank" name="bank" value="{{ player.bank }}"></td>
+            </tr>
+            <tr>
+                <td><label for="desc_textarea">Description:</label></td>
+                <td><textarea id="desc_textarea" name="description">{{ player.description }}</textarea></td>
+            </tr>
+            <tr>
+               <td rowspan="2"><button type="submit">Update Player</button></td>
+            </tr>
+        </table>
+
+    </form>
+</body>
+</html>

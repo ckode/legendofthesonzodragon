@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Armor: {{ armor.name }}</title>
+    <link rel="stylesheet" type="text/css" href="../../../static/styles.css">
+</head>
+<body>
+    <h1>Edit Armor: {{ armor.name }}</h1>
+
+    <form action="/explorer/armor/{{ armor.name }}" method="POST">
+        <table>
+            <tr>
+                <td><label><b>Type</b></label></td>
+                <td><label><b>Value</b></td>
+            </tr>
+            <tr>
+                <td><label>ID:</label></td>
+                <td><label>{{ armor.id }}</label></td>
+            </tr>
+            <tr>
+                <td><label for="name">Name:</label></td>
+                <td><input type="text" id="name" name="name" value="{{ armor.name }}"></td>
+            </tr>
+            <tr>
+                <td><label for="weight">Weight:</label></td>
+                <td><input type="number" id="weight" name="weight" value="{{ armor.weight }}"></td>
+            </tr>
+            <tr>
+                <td><label for="damage_buffer">Damage_Buffer:</label></td>
+                <td><input type="number" id="damage_buffer" name="damage_buffer" value="{{ armor.damage_buffer }}"></td>
+            </tr>
+            <tr>
+                <td><label for="buy_value">Buy_Value:</label></td>
+                <td><input type="number" id="buy_value" name="buy_value" value="{{ armor.buy_value }}"></td>
+            </tr>
+            <tr>
+            <tr>
+                <td><label for="sell_value">Sell_Value:</label></td>
+                <td><input type="number" id="sell_value" name="sell_value" value="{{ armor.sell_value }}"></td>
+            </tr>
+            <tr>
+                <td><label for="monster_only">Monster_Only:</label></td>
+                <td><input type="checkbox" id="monster_only" name="monster_only" value="True" {% if armor.monster_only %}checked{% endif %}></td>
+            </tr>
+            <tr>
+                <td><label for="desc_textarea">Description:</label></td>
+                <td><textarea id="desc_textarea" name="description">{{ armor.description }}</textarea></td>
+            </tr>
+            <tr>
+               <td rowspan="2"><button type="submit">Update Armor</button></td>
+            </tr>
+        </table>
+
+    </form>
+</body>
+</html>

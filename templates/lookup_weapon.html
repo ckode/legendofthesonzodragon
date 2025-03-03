@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Explorer: Weapon Lookup</title>
+    <link rel="stylesheet" type="text/css" href="../../../static/styles.css">
+</head>
+<body>
+   <h1 id="weapon_h1">Weapon Lookup: {{ weapon.name }}</h1>
+
+     {% if weapon %}
+         <h3>Weapon Information:</h3>
+         <ul>
+             <li>Weapon Name: {{ weapon.name }}</li>
+             <li>Weapon Id: {{ weapon.id }}</li>
+             <li>Weight: {{ weapon.weight }}</li>
+             <li>Min_Damage: {{ weapon.min_damage }}</li>
+             <li>Max_Damage: {{ weapon.max_damage }}</li>
+             <li>Buy_Value: {{ weapon.buy_value }}</li>
+             <li>Sell_Value: {{ weapon.sell_value }}</li>
+             <li>Monster_Only: {{ weapon.monster_only }}</li>
+             <li>Description: {{ weapon.description }}</li>
+         </ul>
+     {% endif %}
+   <form method="POST" action="/explorer/weapon/{{ weapon.name }}/edit">
+       <input type="submit" value="Edit Weapon">
+   </form>
+</body>
+</html>

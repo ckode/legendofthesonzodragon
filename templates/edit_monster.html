@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Monster: {{ monster.name }}</title>
+    <link rel="stylesheet" type="text/css" href="../../../static/styles.css">
+</head>
+<body>
+    <h1>Edit Monster: {{ monster.name }}</h1>
+
+    <form action="/explorer/monster/{{ monster.name }}" method="POST">
+        <table>
+            <tr>
+                <td><label><b>Type</b></label></td>
+                <td><label><b>Value</b></td>
+            </tr>
+            <tr>
+                <td><label for="name">Name:</label></td>
+                <td><input type="text" id="name" name="name" value="{{ monster.name }}"></td>
+            </tr>
+            <tr>
+                <td><label for="level">Level:</label></td>
+                <td><input type="number" id="level" name="level" value="{{ monster.level }}"></td>
+            </tr>
+            <tr>
+                <td><label for="health">Health:</label></td>
+                <td><input type="number" id="health" name="health" value="{{ monster.health }}"></td>
+            </tr>
+            <tr>
+                <td><label for="exp">Experience:</label></td>
+                <td><input type="number" id="exp" name="exp" value="{{ monster.exp }}"></td>
+            </tr>
+            <tr>
+                <td><label for="weapon">Weapon:</label></td>
+                <td><input type="number" id="weapon" name="weapon" value="{{ monster.weapon }}"></td>
+            </tr>
+            <tr>
+                <td><label for="armor">Armor:</label></td>
+                <td><input type="number" id="armor" name="armor" value="{{ monster.armor }}"></td>
+            </tr>
+            <tr>
+                <td><label for="desc_textarea">Description:</label></td>
+                <td><textarea id="desc_textarea" name="description">{{ monster.description }}</textarea></td>
+            </tr>
+            <tr>
+               <td rowspan="2"><button type="submit">Update Monster</button></td>
+            </tr>
+        </table>
+
+    </form>
+</body>
+</html>

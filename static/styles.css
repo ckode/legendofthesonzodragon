@@ -1,0 +1,32 @@
+h1 {
+    color: green;
+}
+
+#monster_h1 {
+    color: green;
+}
+
+#player_h1 {
+    color: blue;
+}
+
+#license_title {
+    color: red;
+}
+
+#explorer-home {
+    color: red;
+}
+
+#weapon_h1 {
+    color: darkred;
+}
+
+#armor_h1 {
+    color: darkgreen;
+}
+
+#desc_textarea {
+    width: 400px;
+    height: 100px;
+}

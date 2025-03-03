@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Explorer: Armor Lookup</title>
+    <link rel="stylesheet" type="text/css" href="../../../static/styles.css">
+</head>
+<body>
+   <h1 id="armor_h1">Armor Lookup: {{ armor.name }}</h1>
+
+     {% if armor %}
+         <h3>Armor Information:</h3>
+         <ul>
+             <li>Armor Name: {{ armor.name }}</li>
+             <li>Armor Id: {{ armor.id }}</li>
+             <li>Weight: {{ armor.weight }}</li>
+             <li>Damage_Buffer: {{ armor.damage_buffer }}</li>
+             <li>Buy_Value: {{ armor.buy_value }}</li>
+             <li>Sell_Value: {{ armor.sell_value }}</li>
+             <li>Monster_Only: {{ armor.monster_only }}</li>
+             <li>Description: {{ armor.description }}</li>
+         </ul>
+     {% endif %}
+   <form method="POST" action="/explorer/armor/{{ armor.name }}/edit">
+       <input type="submit" value="Edit Armor">
+   </form>
+</body>
+</html>
