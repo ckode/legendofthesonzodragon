@@ -31,8 +31,8 @@ class Player(SQLModel, table=True):
     level: int
     health: int
     exp: int
-    armor: int = Field(default=1, foreign_key="Armor.id")
-    weapon: int = Field(default=1, foreign_key="Weapon.id")
+    armor: int = Field(default=None, foreign_key="armor.id")
+    weapon: int = Field(default=None, foreign_key="weapon.id")
     gold: int
     bank: int
     description: str

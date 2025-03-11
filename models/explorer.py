@@ -24,6 +24,8 @@ from mock_data.armor import armor_list
 from mock_data.players import players_list
 from mock_data.monsters import monsters_list
 
+from database.connections import lookup_player_by_username, lookup_player_by_name
+from database.connections import save_player
 from typing import Annotated
 
 from models.monsters import Monster
@@ -32,6 +34,10 @@ from models.weapons import Weapon
 from models.armor import Armor
 from pathlib import Path
 from os.path import join
+
+import logging
+# Set up logging.
+logger = logging.getLogger("main")
 
 # Get the parent directory to set up the Jinja2 templates.
 top = Path(__file__).resolve().parent
@@ -59,7 +65,9 @@ async def get_player_by_username(username: str, request: Request) -> HTMLRespons
     :param request:\n
     :return:\n
     """
-    for player in players_list:
+    logger.info(f"Looking up player '{username}' in the database.")
+    player = await lookup_player_by_username(username)
+    if player:
         if player.username == username:
             return templates.TemplateResponse(request=request, name="lookup_player.html", context={"player": player})
 
@@ -75,7 +83,9 @@ async def get_player_by_name(name: str, request: Request) -> HTMLResponse:
     :param request:\n
     :return:\n
     """
-    for player in players_list:
+
+    player = await lookup_player_by_name(name)
+    if player:
         if player.name == name:
             return templates.TemplateResponse(request=request, name="lookup_player.html", context={"player": player})
 
@@ -93,18 +103,22 @@ async def update_player_by_name(request: Request, name: str, data: Annotated[Pla
     :return:\n
     """
     for player in players_list:
-        if player.name == name:
-            player.username = data.username
-            player.password = data.password
-            player.name = data.name
-            player.level = data.level
-            player.health = data.health
-            player.exp = data.exp
-            player.weapon = data.weapon
-            player.armor = data.armor
-            player.gold = data.gold
-            player.bank = data.bank
-            player.description = data.description
+        player = await lookup_player_by_name(name)
+        if player:
+            if player.name == name:
+                player.username = data.username
+                player.password = data.password
+                player.name = data.name
+                player.level = data.level
+                player.health = data.health
+                player.exp = data.exp
+                player.weapon = data.weapon
+                player.armor = data.armor
+                player.gold = data.gold
+                player.bank = data.bank
+                player.description = data.description
+
+                await save_player(player)
 
             return templates.TemplateResponse(request=request, name="lookup_player.html", context={"player": player})
 
@@ -119,7 +133,8 @@ async def edit_player_by_name(name: str, request: Request) -> HTMLResponse:
     :param request:\n
     :return:\n
     """
-    for player in players_list:
+    player = await lookup_player_by_name(name)
+    if player:
         if player.name == name:
             return templates.TemplateResponse(request=request, name="edit_player.html", context={"player": player})
 
@@ -236,7 +251,6 @@ async def update_weapon_by_name(request: Request, name: str, data: Annotated[Wea
             weapon.max_damage = data.max_damage
             weapon.buy_value = data.buy_value
             weapon.sell_value = data.sell_value
-            print(data.monster_only)
             weapon.monster_only = data.monster_only
             weapon.description = data.description
 
