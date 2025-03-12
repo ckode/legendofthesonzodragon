@@ -25,7 +25,8 @@ from mock_data.players import players_list
 from mock_data.monsters import monsters_list
 
 from database.connections import lookup_player_by_username, lookup_player_by_name
-from database.connections import save_player
+from database.connections import lookup_monster_by_name, lookup_armor_by_name, lookup_weapon_by_name
+from database.connections import save_player, save_monster, save_armor, save_weapon
 from typing import Annotated
 
 from models.monsters import Monster
@@ -34,10 +35,11 @@ from models.weapons import Weapon
 from models.armor import Armor
 from pathlib import Path
 from os.path import join
+import json
 
 import logging
 # Set up logging.
-logger = logging.getLogger("main")
+logger = logging.getLogger("explorer")
 
 # Get the parent directory to set up the Jinja2 templates.
 top = Path(__file__).resolve().parent
@@ -56,6 +58,24 @@ async def explorer_home(request: Request) -> HTMLResponse:
 ################################
 # Player Methods
 ################################
+@router.get("/player_raw/by_username/{username}")
+async def get_player_raw_by_username(username: str, request: Request):
+    """
+    Legend of the Sonzo Dragon Explorer: Get player information by username.
+
+    :param username:\n
+    :param request:\n
+    :return:\n
+    """
+    logger.info(f"Looking up player '{username}' in the database.")
+    player = await lookup_player_by_username(username)
+    if player:
+        if player.username == username:
+            return json.dumps(player, default=str)
+
+    return {"message": "Player not found."}
+
+
 @router.get("/player/by_username/{username}", response_class=HTMLResponse)
 async def get_player_by_username(username: str, request: Request) -> HTMLResponse:
     """
@@ -102,25 +122,13 @@ async def update_player_by_name(request: Request, name: str, data: Annotated[Pla
     :param data:\n
     :return:\n
     """
-    for player in players_list:
-        player = await lookup_player_by_name(name)
-        if player:
-            if player.name == name:
-                player.username = data.username
-                player.password = data.password
-                player.name = data.name
-                player.level = data.level
-                player.health = data.health
-                player.exp = data.exp
-                player.weapon = data.weapon
-                player.armor = data.armor
-                player.gold = data.gold
-                player.bank = data.bank
-                player.description = data.description
+    player = await lookup_player_by_name(name)
+    if player:
+        if player.name == name:
+            await save_player(data)
 
-                await save_player(player)
-
-            return templates.TemplateResponse(request=request, name="lookup_player.html", context={"player": player})
+            # Send "data" back instead of the "player" since data is already updated and async player isn't.
+            return templates.TemplateResponse(request=request, name="lookup_player.html", context={"player": data})
 
     return HTMLResponse(status_code=200, content="None")
 
@@ -152,11 +160,12 @@ async def get_monster_by_name(name: str, request: Request) -> HTMLResponse:
     :param request:\n
     :return:\n
     """
-    for monster in monsters_list:
-        if monster.name == name:
-            return templates.TemplateResponse(request=request, name="lookup_monster.html", context={"monster": monster})
+    monster = await lookup_monster_by_name(name)
+    if monster.name == name:
+        return templates.TemplateResponse(request=request, name="lookup_monster.html", context={"monster": monster})
 
     return HTMLResponse(status_code=404, content="Monster not found.")
+
 
 @router.post("/monster/{name}/edit", response_class=HTMLResponse)
 async def edit_monster_by_name(name: str, request: Request) -> HTMLResponse:
@@ -167,9 +176,9 @@ async def edit_monster_by_name(name: str, request: Request) -> HTMLResponse:
     :param request:\n
     :return:\n
     """
-    for monster in monsters_list:
-        if monster.name == name:
-            return templates.TemplateResponse(request=request, name="edit_monster.html", context={"monster": monster})
+    monster = await lookup_monster_by_name(name)
+    if monster.name == name:
+        return templates.TemplateResponse(request=request, name="edit_monster.html", context={"monster": monster})
 
     return HTMLResponse(status_code=404, content="Monster not found.")
 
@@ -186,17 +195,12 @@ async def update_monster_by_name(request: Request, name: str, data: Annotated[Mo
     :param data:\n
     :return:\n
     """
-    for monster in monsters_list:
-        if monster.name == name:
-            monster.name = data.name
-            monster.level = data.level
-            monster.health = data.health
-            monster.exp = data.exp
-            monster.weapon = data.weapon
-            monster.armor = data.armor
-            monster.description = data.description
+    monster = await lookup_monster_by_name(name)
+    if monster.name == name:
+        await save_monster(data)
 
-            return templates.TemplateResponse(request=request, name="lookup_monster.html", context={"monster": monster})
+        # Send "data" back instead of the "monster" since data is already updated and (async) player isn't.
+        return templates.TemplateResponse(request=request, name="lookup_monster.html", context={"monster": data})
 
     return HTMLResponse(status_code=200, content="None")
 
@@ -212,11 +216,12 @@ async def get_weapon_by_name(name: str, request: Request) -> HTMLResponse:
     :param request:\n
     :return:\n
     """
-    for weapon in weapons_list:
-        if weapon.name == name:
-            return templates.TemplateResponse(request=request, name="lookup_weapon.html", context={"weapon": weapon})
+    weapon = await lookup_weapon_by_name(name)
+    if weapon.name == name:
+        return templates.TemplateResponse(request=request, name="lookup_weapon.html", context={"weapon": weapon})
 
     return HTMLResponse(status_code=404, content="Weapon not found.")
+
 
 @router.post("/weapon/{name}/edit", response_class=HTMLResponse)
 async def edit_weapon_by_name(name: str, request: Request) -> HTMLResponse:
@@ -227,9 +232,9 @@ async def edit_weapon_by_name(name: str, request: Request) -> HTMLResponse:
     :param request:\n
     :return:\n
     """
-    for weapon in weapons_list:
-        if weapon.name == name:
-            return templates.TemplateResponse(request=request, name="edit_weapon.html", context={"weapon": weapon})
+    weapon = await lookup_weapon_by_name(name)
+    if weapon.name == name:
+        return templates.TemplateResponse(request=request, name="edit_weapon.html", context={"weapon": weapon})
 
     return HTMLResponse(status_code=404, content="Weapon not found.")
 
@@ -244,17 +249,12 @@ async def update_weapon_by_name(request: Request, name: str, data: Annotated[Wea
     :param data:\n
     :return:\n
     """
-    for weapon in weapons_list:
-        if weapon.name == name:
-            weapon.name = data.name
-            weapon.min_damage = data.min_damage
-            weapon.max_damage = data.max_damage
-            weapon.buy_value = data.buy_value
-            weapon.sell_value = data.sell_value
-            weapon.monster_only = data.monster_only
-            weapon.description = data.description
+    weapon = await lookup_weapon_by_name(name)
+    if weapon.name == name:
+        await save_weapon(data)
 
-            return templates.TemplateResponse(request=request, name="lookup_weapon.html", context={"weapon": weapon})
+        # Send "data" back instead of the "weapon" since data is already updated and (async) player isn't.
+        return templates.TemplateResponse(request=request, name="lookup_weapon.html", context={"weapon": data})
 
     return HTMLResponse(status_code=200, content="None")
 
@@ -270,9 +270,9 @@ async def get_armor_by_name(name: str, request: Request) -> HTMLResponse:
     :param request:\n
     :return:\n
     """
-    for armor in armor_list:
-        if armor.name == name:
-            return templates.TemplateResponse(request=request, name="lookup_armor.html", context={"armor": armor})
+    armor = await lookup_armor_by_name(name)
+    if armor.name == name:
+        return templates.TemplateResponse(request=request, name="lookup_armor.html", context={"armor": armor})
 
     return HTMLResponse(status_code=404, content="Armor not found.")
 
@@ -285,9 +285,9 @@ async def edit_armor_by_name(name: str, request: Request) -> HTMLResponse:
     :param request:\n
     :return:\n
     """
-    for armor in armor_list:
-        if armor.name == name:
-            return templates.TemplateResponse(request=request, name="edit_armor.html", context={"armor": armor})
+    armor = await lookup_armor_by_name(name)
+    if armor.name == name:
+        return templates.TemplateResponse(request=request, name="edit_armor.html", context={"armor": armor})
 
     return HTMLResponse(status_code=404, content="Armor not found.")
 
@@ -302,15 +302,12 @@ async def update_armor_by_name(request: Request, name: str, data: Annotated[Armo
     :param data:\n
     :return:\n
     """
-    for armor in armor_list:
-        if armor.name == name:
-            armor.name = data.name
-            armor.damage_buffer = data.damage_buffer
-            armor.buy_value = data.buy_value
-            armor.sell_value = data.sell_value
-            armor.monster_only = data.monster_only
-            armor.description = data.description
+    logger.info(f"Using amor name: {name} to update armor: {data}")
+    armor = await lookup_armor_by_name(name)
+    if armor.name == name:
+        await save_armor(data)
 
-            return templates.TemplateResponse(request=request, name="lookup_armor.html", context={"armor": armor})
+        # Send "data" back instead of the "armor" since data is already updated and (async) player isn't.'
+        return templates.TemplateResponse(request=request, name="lookup_armor.html", context={"armor": data})
 
     return HTMLResponse(status_code=200, content="None")

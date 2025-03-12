@@ -34,6 +34,15 @@ import logging.config
 from pythonjsonlogger import jsonlogger
 from typing import AsyncGenerator
 
+# Read logging.json configuration file and apply it to the logger.
+with open("logging.json", "r") as f:
+    logging_config = json.load(f)
+    logging.config.dictConfig(config=logging_config)
+
+logger = logging.getLogger("main")
+#logger.setLevel(logging.DEBUG)
+logger.info("Starting Server Legend of the Sonzo Dragon.")
+
 app = FastAPI()
 
 # Including Sub-Routers
@@ -49,6 +58,12 @@ templates = Jinja2Templates(directory=join(f"{top}", "templates"))
 
 @app.get("/")
 async def home():
+    """
+    Renders the home page using Jinja2 template engine.
+
+    :return:\n
+    """
+    logger.info("Rendering Home Page.")
     return {"message": "Welcome to The Legend of the Sonzo Dragon!"}
 
 
@@ -60,16 +75,10 @@ async def get_license(request: Request) -> HTMLResponse:
     :param request:\n
     :return:\n
     """
+    logger.info("Rendering License Page.")
     return templates.TemplateResponse(request=request, name="license.html")
 
 
 if __name__ == "__main__":
-    # Read logging.json configuration file and apply it to the logger.
-    with open("logging.json", "r") as f:
-        logging_config = json.load(f)
-        logging.config.dictConfig(config=logging_config)
-
-    logger = logging.getLogger(__name__)
-
     import uvicorn
     uvicorn.run("main:app", host="0.0.0.0", port=9001, reload=True)
