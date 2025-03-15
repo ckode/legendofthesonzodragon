@@ -22,17 +22,22 @@ from fastapi import FastAPI, Request, Depends
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 
-#from database import connections
 from models import explorer
 
-from contextlib import asynccontextmanager
+from os import urandom
 from os.path import join, exists
 from pathlib import Path
+from datetime import datetime, timedelta
+from jose import jwt, JWTError
+from passlib.context import CryptContext
+
+
 import json
+
 import logging.config
 from pythonjsonlogger import jsonlogger
-from typing import AsyncGenerator
 
 # Read logging.json configuration file and apply it to the logger.
 with open("logging.json", "r") as f:
@@ -40,8 +45,15 @@ with open("logging.json", "r") as f:
     logging.config.dictConfig(config=logging_config)
 
 logger = logging.getLogger("main")
-#logger.setLevel(logging.DEBUG)
 logger.info("Starting Server Legend of the Sonzo Dragon.")
+
+
+
+SECRET_KEY = 'aee7f77e1797a65b192e7b411322d71a243a7de6c81c8996dfe6c2b0f0b041ce'
+NEW_KEY = (urandom(32).hex())
+print(f"NEW_KEY: {NEW_KEY}")
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 app = FastAPI()
 

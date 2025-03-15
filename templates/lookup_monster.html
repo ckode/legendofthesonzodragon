@@ -9,6 +9,7 @@
    <h1 id="monster_h1">Monster Lookup: {{ monster.name }}</h1>
 
      {% if monster %}
+      <img src="{{ monster.image_url }}" alt="{{ monster.name }}">
          <h3>Monster Information:</h3>
          <ul>
              <li>Id: {{ monster.id }}</li>

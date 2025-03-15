@@ -31,23 +31,28 @@ from models.weapons import Weapon
 weapons_list = [
     Weapon(weight=5, min_damage=0, max_damage=3, buy_value=0, sell_value=0, monster_only=False,
            name="small club",
-           description="This is a small rough-hewn tree limb to function as a club."),
+           description="This is a small rough-hewn tree limb to function as a club.",
+           image_url="../../../static/images/items/weapon_small_club.png"),
 
     Weapon(weight=5, min_damage=0, max_damage=3, buy_value=0, sell_value=0, monster_only=False,
            name="small dagger",
-           description="This is a small utility dagger that can be used for self-defense if required."),
+           description="This is a small utility dagger that can be used for self-defense if required.",
+           image_url="../../../static/images/items/weapon_small_dagger.png"),
 
     Weapon(weight=10, min_damage=1, max_damage=4, buy_value=10, sell_value=5, monster_only=False,
            name="rapier",
-           description="This rapier is primarily a thrust weapon with a vary sharp point."),
+           description="This rapier is primarily a thrust weapon with a vary sharp point.",
+           image_url="../../../static/images/items/weapon_rapier.png"),
 
     Weapon(weight=12, min_damage=1, max_damage=5, buy_value=12, sell_value=6, monster_only=False,
            name="cutlass",
            description="This cutlass is short sabre style slashing sword with a slight upward curved blade with "
-                       "a basket shared guard."),
+                       "a basket shared guard.",
+           image_url="../../../static/images/items/weapon_cutlass.png"),
     Weapon(weight=15, min_damage=3, max_damage=8, buy_value=20, sell_value=10, monster_only=False,
            name="Norse field axe",
            description="A teak wood shaft attaches to the tempered carbon steel axe head through "
                        "a single socket. The haft has a wrapped leather grip. This axe features a "
-                       "slightly flared, bearded axe blade.")
+                       "slightly flared, bearded axe blade.",
+           image_url="../../../static/images/items/weapon_norse_field_axe.png"),
 ]

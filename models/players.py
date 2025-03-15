@@ -36,4 +36,5 @@ class Player(SQLModel, table=True):
     gold: int
     bank: int
     description: str
+    image_url: str = Field(default=None)
 

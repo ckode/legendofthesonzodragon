@@ -16,15 +16,16 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from fastapi import APIRouter, Request, Form
+from fastapi import APIRouter, Request, Form, Query
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
+
 from mock_data.weapons import weapons_list
 from mock_data.armor import armor_list
 from mock_data.players import players_list
 from mock_data.monsters import monsters_list
 
-from database.connections import lookup_player_by_username, lookup_player_by_name
+from database.connections import lookup_player_by_username, lookup_player_by_name, get_all_players
 from database.connections import lookup_monster_by_name, lookup_armor_by_name, lookup_weapon_by_name
 from database.connections import save_player, save_monster, save_armor, save_weapon
 from typing import Annotated
@@ -58,22 +59,15 @@ async def explorer_home(request: Request) -> HTMLResponse:
 ################################
 # Player Methods
 ################################
-@router.get("/player_raw/by_username/{username}")
-async def get_player_raw_by_username(username: str, request: Request):
+@router.get("/search/player/", response_class=HTMLResponse)
+async def get_player_by_name(request: Request) -> HTMLResponse:
     """
-    Legend of the Sonzo Dragon Explorer: Get player information by username.
+    Legend of the Sonzo Dragon Explorer: Get player information by name.
 
-    :param username:\n
     :param request:\n
     :return:\n
     """
-    logger.info(f"Looking up player '{username}' in the database.")
-    player = await lookup_player_by_username(username)
-    if player:
-        if player.username == username:
-            return json.dumps(player, default=str)
-
-    return {"message": "Player not found."}
+    return templates.TemplateResponse(request=request, name="player_search.html")
 
 
 @router.get("/player/by_username/{username}", response_class=HTMLResponse)
@@ -94,8 +88,25 @@ async def get_player_by_username(username: str, request: Request) -> HTMLRespons
     return HTMLResponse(status_code=404, content="Player not found.")
 
 
-@router.get("/player/by_name/{name}", response_class=HTMLResponse)
-async def get_player_by_name(name: str, request: Request) -> HTMLResponse:
+# @router.get("/player/by_name/{name}", response_class=HTMLResponse)
+# async def get_player_by_name(name: str, request: Request) -> HTMLResponse:
+#     """
+#     Legend of the Sonzo Dragon Explorer: Get player information by name.
+#
+#     :param name:\n
+#     :param request:\n
+#     :return:\n
+#     """
+#
+#     player = await lookup_player_by_name(name)
+#     if player:
+#         if player.name == name:
+#             return templates.TemplateResponse(request=request, name="lookup_player.html", context={"player": player})
+#
+#     return HTMLResponse(status_code=404, content="Player not found.")
+
+@router.get("/player/by_name/", response_class=HTMLResponse)
+async def get_player_by_name(request: Request, name: Annotated[str | None, Query(max_length=25)] = None) -> HTMLResponse:
     """
     Legend of the Sonzo Dragon Explorer: Get player information by name.
 
@@ -103,13 +114,15 @@ async def get_player_by_name(name: str, request: Request) -> HTMLResponse:
     :param request:\n
     :return:\n
     """
+    player = None
 
-    player = await lookup_player_by_name(name)
+    if name:
+        player = await lookup_player_by_name(name)
+
     if player:
-        if player.name == name:
-            return templates.TemplateResponse(request=request, name="lookup_player.html", context={"player": player})
-
-    return HTMLResponse(status_code=404, content="Player not found.")
+        return templates.TemplateResponse(request=request, name="lookup_player.html", context={"player": player})
+    else:
+        return HTMLResponse(status_code=404, content="Player not found.")
 
 
 @router.post("/player/by_name/{name}", response_class=HTMLResponse)
@@ -151,6 +164,36 @@ async def edit_player_by_name(name: str, request: Request) -> HTMLResponse:
 ###########################################
 # Monster Methods
 ###########################################
+@router.get("/search/monster/", response_class=HTMLResponse)
+async def get_monster_by_name(request: Request) -> HTMLResponse:
+    """
+    Legend of the Sonzo Dragon Explorer: Search for Monster information by name.
+
+    :param request:\n
+    :return:\n
+    """
+    return templates.TemplateResponse(request=request, name="monster_search.html")
+
+@router.get("/monster/by_name/", response_class=HTMLResponse)
+async def get_player_by_name(request: Request, name: Annotated[str | None, Query(max_length=25)] = None) -> HTMLResponse:
+    """
+    Legend of the Sonzo Dragon Explorer: Get monster information by name.
+
+    :param name:\n
+    :param request:\n
+    :return:\n
+    """
+    monster = None
+
+    if name:
+        monster = await lookup_monster_by_name(name)
+
+    if monster:
+        return templates.TemplateResponse(request=request, name="lookup_monster.html", context={"monster": monster})
+    else:
+        return HTMLResponse(status_code=404, content="Monster not found.")
+
+
 @router.get("/monster/{name}", response_class=HTMLResponse)
 async def get_monster_by_name(name: str, request: Request) -> HTMLResponse:
     """
@@ -207,6 +250,36 @@ async def update_monster_by_name(request: Request, name: str, data: Annotated[Mo
 ################################
 # Weapon Methods
 ################################
+@router.get("/search/weapon/", response_class=HTMLResponse)
+async def get_weapon_by_name(request: Request) -> HTMLResponse:
+    """
+    Legend of the Sonzo Dragon Explorer: Search for Weapon information by name.
+
+    :param request:\n
+    :return:\n
+    """
+    return templates.TemplateResponse(request=request, name="weapon_search.html")
+
+@router.get("/weapon/by_name/", response_class=HTMLResponse)
+async def get_weapon_by_name(request: Request, name: Annotated[str | None, Query(max_length=25)] = None) -> HTMLResponse:
+    """
+    Legend of the Sonzo Dragon Explorer: Get weapon information by name.
+
+    :param name:\n
+    :param request:\n
+    :return:\n
+    """
+    weapon = None
+
+    if name:
+        weapon = await lookup_weapon_by_name(name)
+
+    if weapon:
+        return templates.TemplateResponse(request=request, name="lookup_weapon.html", context={"weapon": weapon})
+    else:
+        return HTMLResponse(status_code=404, content="Weapon not found.")
+
+
 @router.get("/weapon/{name}", response_class=HTMLResponse)
 async def get_weapon_by_name(name: str, request: Request) -> HTMLResponse:
     """
@@ -258,9 +331,40 @@ async def update_weapon_by_name(request: Request, name: str, data: Annotated[Wea
 
     return HTMLResponse(status_code=200, content="None")
 
+
 ################################
 # Armor Methods
 ################################
+@router.get("/search/armor/", response_class=HTMLResponse)
+async def get_armor_by_name(request: Request) -> HTMLResponse:
+    """
+    Legend of the Sonzo Dragon Explorer: Search for Armor information by name.
+
+    :param request:\n
+    :return:\n
+    """
+    return templates.TemplateResponse(request=request, name="armor_search.html")
+
+@router.get("/armor/by_name/", response_class=HTMLResponse)
+async def get_armor_by_name(request: Request, name: Annotated[str | None, Query(max_length=25)] = None) -> HTMLResponse:
+    """
+    Legend of the Sonzo Dragon Explorer: Get armor information by name.
+
+    :param name:\n
+    :param request:\n
+    :return:\n
+    """
+    armor = None
+
+    if name:
+        armor = await lookup_armor_by_name(name)
+
+    if armor:
+        return templates.TemplateResponse(request=request, name="lookup_armor.html", context={"armor": armor})
+    else:
+        return HTMLResponse(status_code=404, content="Armor not found.")
+
+
 @router.get("/armor/{name}", response_class=HTMLResponse)
 async def get_armor_by_name(name: str, request: Request) -> HTMLResponse:
     """
@@ -275,6 +379,7 @@ async def get_armor_by_name(name: str, request: Request) -> HTMLResponse:
         return templates.TemplateResponse(request=request, name="lookup_armor.html", context={"armor": armor})
 
     return HTMLResponse(status_code=404, content="Armor not found.")
+
 
 @router.post("/armor/{name}/edit", response_class=HTMLResponse)
 async def edit_armor_by_name(name: str, request: Request) -> HTMLResponse:
@@ -302,7 +407,6 @@ async def update_armor_by_name(request: Request, name: str, data: Annotated[Armo
     :param data:\n
     :return:\n
     """
-    logger.info(f"Using amor name: {name} to update armor: {data}")
     armor = await lookup_armor_by_name(name)
     if armor.name == name:
         await save_armor(data)

@@ -30,3 +30,4 @@ class Weapon(SQLModel, table=True):
     buy_value: int
     sell_value: int
     monster_only: bool = Field(default=False)
+    image_url: Optional[str] = Field(default=None)

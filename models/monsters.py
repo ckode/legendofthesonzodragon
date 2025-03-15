@@ -31,5 +31,6 @@ class Monster(SQLModel, table=True):
     weapon: int = Field(default=None, foreign_key="weapon.id")
     armor: int = Field(default=None, foreign_key="armor.id")
     description: str
+    image_url: str
 
 

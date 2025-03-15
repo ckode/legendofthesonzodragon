@@ -9,11 +9,13 @@
    <h1 id="armor_h1">Armor Lookup: {{ armor.name }}</h1>
 
      {% if armor %}
+   <img src="{{ armor.image_url }}" alt="{{ armor.name }}">
+
          <h3>Armor Information:</h3>
          <ul>
              <li>Armor Id: {{ armor.id }}</li>
              <li>Armor Name: {{ armor.name }}</li>
-             <li>Armor Id: {{ armor.id }}</li>
+             <li>Armor Class: {{ armor.ac }}</li>
              <li>Weight: {{ armor.weight }}</li>
              <li>Damage_Buffer: {{ armor.damage_buffer }}</li>
              <li>Buy_Value: {{ armor.buy_value }}</li>

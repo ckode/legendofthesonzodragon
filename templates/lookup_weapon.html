@@ -9,6 +9,7 @@
    <h1 id="weapon_h1">Weapon Lookup: {{ weapon.name }}</h1>
 
      {% if weapon %}
+         <img src="{{ weapon.image_url }}" alt="{{ weapon.name }}">
          <h3>Weapon Information:</h3>
          <ul>
              <li>Weapon Id: {{ weapon.id }}</li>

@@ -21,15 +21,19 @@ from models.players import Player
 players_list = [
     Player(username='Frag', password='password1', name='Mock_Dave',
            level=1, health=100, exp=0, armor=1, weapon=1, gold=10, bank=100,
-           description='A friendly and mischievous slaughter machine.'),
+           description='A friendly and mischievous slaughter machine.',
+           image_url='../../../static/images/items/player_frag.webp'),
     Player(username='Omegus', password='password1', name='Mock_Mark',
            level=1, health=100, exp=0, armor=1, weapon=1, gold=10, bank=100,
-           description="A flippant dilrod who is always searching for a victim."),
+           description="A flippant dilrod who is always searching for a victim.",
+           image_url='../../../static/images/items/player_omegus.webp'),
     Player(username='AbsoluteZero', password='password1', name='Mock_Mike',
            level=1, health=100, exp=0, armor=1, weapon=1, gold=10, bank=100,
-           description="A humble (not) and helpful Orc who always screams, \"Who wants to do some shootin'?\""),
+           description="A humble (not) and helpful Orc who always screams, \"Who wants to do some shootin'?\"",
+            image_url='../../../static/images/items/player_absolutezero.jpg'),
     Player(username = 'Idyil', password = 'password1', name = 'Mock_Rick',
            level = 1, health = 100, exp = 0, armor = 1, weapon = 1, gold = 10, bank = 100,
-           description = 'The old wise man who is helpful and friendly to noone.'),
+           description = 'The old wise man who is helpful and friendly to noone.',
+           image_url = '../../../static/images/items/player_smuttly.gif'  ),
 ]
 

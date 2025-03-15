@@ -9,6 +9,7 @@
    <h1 id="player_h1">Player Lookup: {{ player.username }}</h1>
 
      {% if player %}
+         <img src="{{ player.image_url }}" alt="{{ player.name }}">
          <h3>Player Information:</h3>
          <ul>
              <li>Id: {{ player.id }}</li>

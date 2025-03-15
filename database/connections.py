@@ -19,7 +19,7 @@ limitations under the License.
 from os.path import exists
 import logging
 
-from sqlmodel import SQLModel, select, create_engine, Session
+from sqlmodel import SQLModel, select, create_engine, Session, func
 
 from models.weapons import Weapon
 from models.armor import Armor
@@ -31,7 +31,7 @@ from mock_data.armor import armor_list
 from mock_data.players import players_list
 from mock_data.monsters import monsters_list
 
-
+from typing import List
 
 
 def verify_game_data() -> None:
@@ -72,6 +72,21 @@ def verify_game_data() -> None:
         session.commit()
 
 
+async def get_all_players() -> List[Player]:
+    """
+    Retrieve a player from the database by their name.
+
+    :param name: The name of the player.
+    :return: The player object if found, None otherwise.
+    """
+    with Session(engine) as session:
+        statement = select(Player)
+        result = session.exec(statement)
+        players = result.all()
+
+    return players
+
+
 async def lookup_player_by_username(name: str):
     """
     Retrieve a player from the database by their username.
@@ -79,9 +94,8 @@ async def lookup_player_by_username(name: str):
     :param name: The username of the player.
     :return: The player object if found, None otherwise.
     """
-    logger.info(f"Looking up player by username: {name}")
     with Session(engine) as session:
-        statement = select(Player).where(Player.username == name)
+        statement = select(Player).where(func.lower(Player.username) == name.lower())
         result = session.exec(statement)
         player = result.first()
 
@@ -95,9 +109,8 @@ async def lookup_player_by_name(name: str):
     :param name: The name of the player.
     :return: The player object if found, None otherwise.
     """
-    logger.info(f"Looking up player by name: {name}")
     with Session(engine) as session:
-        statement = select(Player).where(Player.name == name)
+        statement = select(Player).where(func.lower(Player.name) == name.lower())
         result = session.exec(statement)
         player = result.first()
 
@@ -111,9 +124,8 @@ async def lookup_monster_by_name(name: str):
     :param name: The name of the monster.
     :return: The monster object if found, None otherwise.
     """
-    logger.info(f"Looking up monster by name: {name}")
     with Session(engine) as session:
-        statement = select(Monster).where(Monster.name == name)
+        statement = select(Monster).where(func.lower(Monster.name) == name.lower())
         result = session.exec(statement)
         monster = result.first()
 
@@ -127,9 +139,8 @@ async def lookup_armor_by_name(name: str):
     :param name: The name of the armor.
     :return: The armor object if found, None otherwise.
     """
-    logger.info(f"Looking up armor by name: {name}")
     with Session(engine) as session:
-        statement = select(Armor).where(Armor.name == name)
+        statement = select(Armor).where(func.lower(Armor.name) == name.lower())
         result = session.exec(statement)
         armor = result.first()
 
@@ -143,9 +154,8 @@ async def lookup_weapon_by_name(name: str):
     :param name: The name of the weapon.
     :return: The weapon object if found, None otherwise.
     """
-    logger.info(f"Looking up weapon by name: {name}")
     with Session(engine) as session:
-        statement = select(Weapon).where(Weapon.name == name)
+        statement = select(Weapon).where(func.lower(Weapon.name) == name.lower())
         result = session.exec(statement)
         weapon = result.first()
 
@@ -155,25 +165,6 @@ async def lookup_weapon_by_name(name: str):
 # Save Objects to Database
 ################################################################
 
-async def merge_object_changes(from_obj: object, to_obj: object) -> object:
-    """
-    Merge object changes so the object can be saved to the database without
-    overwriting important database session attributes that start with underscores.
-
-    :param from_obj: The object with changes.
-    :param to_obj: The object to merge changes into.
-    :return: The merged object.
-    """
-    logger.info(f"Merging object changes: {type(from_obj)} -> {type(to_obj)}")
-    for attr, value in vars(from_obj).items():
-        if not attr.startswith("_"):
-            logger.info(f"Setting attribute: {attr} = {value}")
-            if not hasattr(to_obj, attr) or value!= getattr(to_obj, attr):
-                setattr(to_obj, attr, value)
-
-    return to_obj
-
-
 async def save_player(updated_player: Player) -> None:
     """
     Save a player to the database.
@@ -181,13 +172,12 @@ async def save_player(updated_player: Player) -> None:
     :param player: The player object to save.
     :return:
     """
-    logger.info(f"Saving player: {updated_player.username}")
     with Session(engine) as session:
         statement = select(Player).where(Player.id == updated_player.id)
         result = session.exec(statement)
         player = result.one()
 
-        player = await merge_object_changes(updated_player, player)
+        player.sqlmodel_update(updated_player)
         session.add(player)
         session.commit()
 
@@ -199,13 +189,12 @@ async def save_monster(updated_monster: Monster) -> None:
     :param monster: The monster object to save.
     :return:
     """
-    logger.info(f"Saving player: {updated_monster.name}")
     with Session(engine) as session:
         statement = select(Monster).where(Monster.id == updated_monster.id)
         result = session.exec(statement)
         monster = result.one()
 
-        monster = await merge_object_changes(updated_monster, monster)
+        monster.sqlmodel_update(updated_monster)
         session.add(monster)
         session.commit()
 
@@ -217,14 +206,13 @@ async def save_armor(updated_armor: Armor) -> None:
     :param armor: The armor object to save.
     :return:
     """
-    logger.info(f"Saving armor: {updated_armor.name}")
     with Session(engine) as session:
         logger.info(f"Looking up armor by id: {updated_armor.id} in {Armor.id}")
         statement = select(Armor).where(Armor.id == updated_armor.id)
         result = session.exec(statement)
         armor = result.one()
 
-        armor = await merge_object_changes(updated_armor, armor)
+        armor.sqlmodel_update(updated_armor)
         session.add(armor)
         session.commit()
 
@@ -236,13 +224,12 @@ async def save_weapon(updated_weapon: Weapon) -> None:
     :param weapon: The weapon object to save.
     :return:
     """
-    logger.info(f"Saving weapon: {updated_weapon.name}")
     with Session(engine) as session:
         statement = select(Weapon).where(Weapon.id == updated_weapon.id)
         result = session.exec(statement)
         weapon = result.one()
 
-        weapon = await merge_object_changes(updated_weapon, weapon)
+        weapon.sqlmodel_update(updated_weapon)
         session.add(weapon)
         session.commit()
 
